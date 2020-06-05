@@ -12,7 +12,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/reactima/reactima-go/reflectx"
+	"github.com/reactima/reactima-go/sqlx/reflectx"
 
 )
 

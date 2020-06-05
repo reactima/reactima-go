@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/reactima/reactima-go/reflectx"
+	"github.com/reactima/reactima-go/sqlx/reflectx"
 )
 
 // Bindvar types supported by Rebind, BindMap and BindStruct.
