@@ -3,7 +3,6 @@ package jobrunner
 import (
 	"time"
 
-	//"github.com/reactima/hh-crm-api/db"
 	"github.com/reactima/reactima-go/cron"
 )
 
