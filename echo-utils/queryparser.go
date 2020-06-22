@@ -28,16 +28,16 @@ type Params struct {
 	Sort      []SortItem          `json:"sort"`
 	Include   []string            `json:"include"`
 	Page      Page                `json:"page"`
-	Github      Github                `json:"github"`
+	Github    Github              `json:"github"`
 	Aggregate Aggregate           `json:"aggregate"`
 
-	Where     map[string]Where    `json:"where"`
+	Where map[string]Where `json:"where"`
 	// use either logic here ?
-	WhereCondition  Condition      `json:"whereCondition"`
-	WhereExpressions  []Expression      `json:"whereExpressions"`
+	WhereCondition   Condition    `json:"whereCondition"`
+	WhereExpressions []Expression `json:"whereExpressions"`
 
-	Kpis      OneManyParams       `json:"kpis"`
-	TagsIDs   TagsIDs             `json:"tagsIDs"`
+	Kpis    OneManyParams `json:"kpis"`
+	TagsIDs TagsIDs       `json:"tagsIDs"`
 }
 type SortItem struct {
 	Number   string `json:"table"`
@@ -74,17 +74,16 @@ type Condition struct {
 	Values   []string `json:"values"`   // [1,2,3]
 }
 
-
-
 // for KPIs in Params
 type OneManyParams struct {
-	Fields []string   `json:"fields"`
-	Sort   []SortItem `json:"sort"`
-	Page   Page       `json:"page"`
-	Where  Where      `json:"where"`
-	WhereCondition  Condition      `json:"whereCondition"`
-	WhereExpressions  []Expression      `json:"whereExpressions"`
+	Fields           []string     `json:"fields"`
+	Sort             []SortItem   `json:"sort"`
+	Page             Page         `json:"page"`
+	Where            Where        `json:"where"`
+	WhereCondition   Condition    `json:"whereCondition"`
+	WhereExpressions []Expression `json:"whereExpressions"`
 }
+
 // for TagsIDs in Params
 type TagsIDs struct {
 	Tags      TaggedParams `json:"tags"`
@@ -101,32 +100,30 @@ type TaggedParams struct {
 
 // the above so we can get SQL below
 type SQL struct {
-	Fields     []string `json:"fields"`
-	Table      string   `json:"table"`
-	Foreign    string   `json:"string"`
-	IDs        []int64  `json:"ids"`
+	Fields  []string `json:"fields"`
+	Table   string   `json:"table"`
+	Foreign string   `json:"string"`
+	IDs     []int64  `json:"ids"`
 
-	ListJoinSQL    string   `json:"listJoinSQL"` // for join
-	TagsIdsJoinSQL string   `json:"tagsIdsJoinSQL"`// for join
-	KpiJoinSQL string   `json:"kpiJoinSQL"` // for join
-	FileJoinSQL string   `json:"fileJoinSQL"` // for join
+	ListJoinSQL    string `json:"listJoinSQL"`    // for join
+	TagsIdsJoinSQL string `json:"tagsIdsJoinSQL"` // for join
+	KpiJoinSQL     string `json:"kpiJoinSQL"`     // for join
+	FileJoinSQL    string `json:"fileJoinSQL"`    // for join
 
-	WhereSQL   string   `json:"whereSQL"`
+	WhereSQL string `json:"whereSQL"`
 
-	ListWhereSQL    string   `json:"listWhereSQL"` // for join
-	TagsIdsWhereSQL string   `json:"tagsIdsWhereSQL"`// for join
-	KpiWhereSQL string   `json:"kpiWhereSQL"` // for join
-	FileWhereSQL string   `json:"fileWhereSQL"` // for join
+	ListWhereSQL    string `json:"listWhereSQL"`    // for join
+	TagsIdsWhereSQL string `json:"tagsIdsWhereSQL"` // for join
+	KpiWhereSQL     string `json:"kpiWhereSQL"`     // for join
+	FileWhereSQL    string `json:"fileWhereSQL"`    // for join
 
-	OrderSQL   string   `json:"orderSQL"`
-	Offset     string   `json:"offset"`
-	Limit      string   `json:"limit"`
+	OrderSQL string `json:"orderSQL"`
+	Offset   string `json:"offset"`
+	Limit    string `json:"limit"`
 }
 type ParamIDs struct {
 	IDs []string `json:"ids"`
 }
-
-
 
 func isOperator(operator string) bool {
 	switch operator {
@@ -175,13 +172,40 @@ func (condition *Condition) Text() string {
 	if condition.Operator == "STARTS_WITH" {
 		return fmt.Sprintf(" %s ILIKE '%s%%' ", condition.Field, condition.Value)
 	}
+
+	if condition.Operator == "=" {
+		return fmt.Sprintf(" %s = '%s' ", condition.Field, condition.Value)
+	}
 	if condition.Operator == ">=" {
 		return fmt.Sprintf(" %s >= '%s' ", condition.Field, condition.Value)
 	}
+	if condition.Operator == ">" {
+		return fmt.Sprintf(" %s > '%s' ", condition.Field, condition.Value)
+	}
+
 	if condition.Operator == "<=" {
 		return fmt.Sprintf(" %s <= '%s' ", condition.Field, condition.Value)
 	}
+	if condition.Operator == "<" {
+		return fmt.Sprintf(" %s <= '%s' ", condition.Field, condition.Value)
+	}
 
+	if condition.Operator == "=!" {
+		return fmt.Sprintf(" %s = %s ", condition.Field, condition.Value)
+	}
+	if condition.Operator == ">=!" {
+		return fmt.Sprintf(" %s >= %s ", condition.Field, condition.Value)
+	}
+	if condition.Operator == ">!" {
+		return fmt.Sprintf(" %s > %s ", condition.Field, condition.Value)
+	}
+
+	if condition.Operator == "<=!" {
+		return fmt.Sprintf(" %s <= %s ", condition.Field, condition.Value)
+	}
+	if condition.Operator == "<!" {
+		return fmt.Sprintf(" %s <= %s ", condition.Field, condition.Value)
+	}
 
 	return condition.Field + " " + condition.Operator + " " + condition.Value
 }
@@ -193,7 +217,7 @@ func (expression *Expression) Text() string {
 	sql := " "
 
 	// TODO fix check if either
-	if expression.Condition.Field!="" {
+	if expression.Condition.Field != "" {
 		condition := expression.Condition
 
 		//fmt.Println(">>>> expression.Condition.Field start:", expression.Condition.Field)
@@ -205,7 +229,7 @@ func (expression *Expression) Text() string {
 		//fmt.Println(">>>> expression.Condition.Field end:")
 	}
 
-	if expression.Conditions!=nil {
+	if expression.Conditions != nil {
 
 		//fmt.Println("expression.Conditions:")
 		//Pretty(expression.Conditions)
@@ -239,7 +263,7 @@ func (where *Where) ConvertWhereFields(table string, tags map[string]string) err
 		fmt.Println("ConvertWhereFields key:", key)
 
 		// TODO fix check if either
-		if where.Expressions[key].Condition.Field!="" {
+		if where.Expressions[key].Condition.Field != "" {
 
 			field := where.Expressions[key].Condition.Field
 			fieldKey := strings.TrimPrefix(field, table+".")
@@ -257,7 +281,7 @@ func (where *Where) ConvertWhereFields(table string, tags map[string]string) err
 
 		}
 
-		if where.Expressions[key].Conditions!=nil {
+		if where.Expressions[key].Conditions != nil {
 			for key2, _ := range where.Expressions[key].Conditions {
 				field := where.Expressions[key].Conditions[key2].Field
 				fieldKey := strings.TrimPrefix(field, table+".")
@@ -274,7 +298,6 @@ func (where *Where) ConvertWhereFields(table string, tags map[string]string) err
 				where.Expressions[key].Conditions[key2].Field = tags[fieldKey]
 			}
 		}
-
 
 	}
 
@@ -350,7 +373,7 @@ func (where *Where) Text() string {
 				} else {
 					sql = sql + where.Operation + " ( " + expression.Text() + " ) "
 				}
-				fmt.Println("sql:",sql)
+				fmt.Println("sql:", sql)
 			}
 
 		}
