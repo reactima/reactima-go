@@ -128,7 +128,9 @@ type ParamIDs struct {
 func isOperator(operator string) bool {
 	switch operator {
 	case
-		"=", "<>", ">", ">=", "<", "<=", "%X", "%%", "X%", "start_with", "end_with", "not in", "in", "not or", "or", "like", "ilike":
+		"=", "<>", ">", ">=", "<", "<=",
+		"=!", "<>!", ">!", ">=!", "<!", "<=!",
+		"%X", "%%", "X%", "start_with", "end_with", "not in", "in", "not or", "or", "like", "ilike":
 		return true
 	}
 	return false
