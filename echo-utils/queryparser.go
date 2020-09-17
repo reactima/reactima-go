@@ -29,6 +29,7 @@ type Params struct {
 	Include   []string            `json:"include"`
 	Page      Page                `json:"page"`
 	Github    Github              `json:"github"`
+	Extra    Extra              `json:"extra"`
 	Aggregate Aggregate           `json:"aggregate"`
 
 	Where map[string]Where `json:"where"`
@@ -51,6 +52,9 @@ type Page struct {
 }
 type Github struct {
 	Location string `json:"location"`
+}
+type Extra struct {
+	Utility string `json:"utility"`
 }
 type Aggregate struct {
 	Count map[string]string `json:"count"`
