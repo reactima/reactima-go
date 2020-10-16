@@ -53,9 +53,12 @@ type Page struct {
 type Github struct {
 	Location string `json:"location"`
 }
+
 type Extra struct {
 	Utility string `json:"utility"`
+	Params map[string]string `json:"params"`
 }
+
 type Aggregate struct {
 	Count map[string]string `json:"count"`
 	Max   map[string]string `json:"max"`
@@ -132,7 +135,7 @@ type ParamIDs struct {
 func isOperator(operator string) bool {
 	switch operator {
 	case
-		"=", "<>", ">", ">=", "<", "<=",
+		"is_blank", "not_blank", "=", "<>", ">", ">=", "<", "<=",
 		"=!", "<>!", ">!", ">=!", "<!", "<=!",
 		"%X", "%%", "X%", "start_with", "end_with", "not in", "in", "not or", "or", "like", "ilike":
 		return true
@@ -171,6 +174,12 @@ func (condition *Condition) Text() string {
 	}
 	if condition.Operator == "like" {
 		return fmt.Sprintf(" %s LIKE '%%%s%%' ", condition.Field, condition.Value)
+	}
+	if condition.Operator == "is_blank" {
+		return fmt.Sprintf(" %s IS NULL ", condition.Field)
+	}
+	if condition.Operator == "not_blank" {
+		return fmt.Sprintf(" %s IS NOT NULL ", condition.Field)
 	}
 	if condition.Operator == "ilike" {
 		return fmt.Sprintf(" %s ILIKE '%%%s%%' ", condition.Field, condition.Value)
